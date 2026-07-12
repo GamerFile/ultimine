@@ -420,7 +420,7 @@ system.runInterval(() => {
                             else if (count === 2 && ((b1 && b3) || (b2 && b4))) draw = true;
 
                             if (draw) {
-                                const I = 0.01; // User requested 0.2 offset inflation
+                                const I = 0.01;
                                 let d = Vec3(0, 0, 0);
                                 let startLoc = Vec3(x, y, z);
                                 let endLoc = Vec3(x, y, z);
