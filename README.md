@@ -59,13 +59,14 @@ You can install a released version without building from source by using the Rel
 - Using Releases:
   1. Go to the Releases page: https://github.com/GamerFile/ultimine/releases
   2. Find the release you want (for example `v1.3.3`).
-  3. Download the provided release assets (BP.zip / RP.zip) if available. If assets are not provided, download the "Source code (zip)" for that release.
-  4. Extract the archive and copy the `BP` and `RP` folders to your `com.mojang/behavior_packs/` and `com.mojang/resource_packs/` directories respectively.
+  3. Download the provided release assets 
+  4. Import the asset
 
 - Using Tags:
   1. Tags mirror release versions and can be found at: https://github.com/GamerFile/ultimine/tags
   2. Click a tag (for example `v1.3.3`) and download the source archive for that tag (`v1.3.3.zip`).
-  3. Extract and copy `BP` and `RP` as described above.
+  3. Rename zip extension to mcaddon
+  4. Import with minecraft
 
 - Git clone a specific tag (advanced):
   ```bash
