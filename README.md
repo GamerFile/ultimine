@@ -45,13 +45,37 @@ Repository: [GamerFile/ultimine tree - main](https://github.com/GamerFile/ultimi
 1. Copy `BP` folder to your behavior_packs directory
 2. Copy `RP` folder to your resource_packs directory
 3. Create a new world and apply both packs
-5. Restart the world if scripts don't load immediately
+4. Restart the world if scripts don't load immediately
 
 ### Option 2: With Pack Building Tools
 If you use a tool like **Ore UI**, **Blockbench**, or another Bedrock add-on builder:
 1. Import both BP and RP folders into your project
 2. Build/export the pack
 3. Follow the manual installation steps above
+
+### Option 3: Install from Releases & Tags (recommended for non-developers)
+You can install a released version without building from source by using the Releases or Tags on GitHub.
+
+- Using Releases:
+  1. Go to the Releases page: https://github.com/GamerFile/ultimine/releases
+  2. Find the release you want (for example `v1.3.3`).
+  3. Download the provided release assets (BP.zip / RP.zip) if available. If assets are not provided, download the "Source code (zip)" for that release.
+  4. Extract the archive and copy the `BP` and `RP` folders to your `com.mojang/behavior_packs/` and `com.mojang/resource_packs/` directories respectively.
+
+- Using Tags:
+  1. Tags mirror release versions and can be found at: https://github.com/GamerFile/ultimine/tags
+  2. Click a tag (for example `v1.3.3`) and download the source archive for that tag (`v1.3.3.zip`).
+  3. Extract and copy `BP` and `RP` as described above.
+
+- Git clone a specific tag (advanced):
+  ```bash
+  git clone --branch v1.3.3 --single-branch https://github.com/GamerFile/ultimine.git
+  ```
+  After cloning, copy the `BP` and `RP` folders from the checkout into your Minecraft packs directories.
+
+Notes:
+- Always verify the release or tag matches the Minecraft and Script API version required (see Requirements above).
+- If downloading source archives, make sure to extract and locate the `BP` and `RP` folders inside the archive before installing.
 
 ### Note on Script Modules
 The scripts are configured in `BP/manifest.json`:
@@ -94,6 +118,7 @@ For detailed API information, refer to the official [Minecraft Bedrock Script AP
 1. Clone the repository
 2. Copy `BP` and `RP` folders to your behavior and resource pack directories
 3. Create a test world with both packs enabled
+4. Enable experimental features for Script API support
 5. Edit JavaScript files in `BP/scripts/` and test changes by reloading the world
 
 ### Code Organization
@@ -105,6 +130,7 @@ For detailed API information, refer to the official [Minecraft Bedrock Script AP
 ### Debugging Tips
 - Check Minecraft debug logs in `logs/` folder
 - Use `console.log()` in your scripts for debugging (output visible in debug logs)
+- Test with a single pack first (BP or RP separately) to isolate issues
 
 ## Contributing
 
