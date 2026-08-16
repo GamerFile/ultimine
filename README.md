@@ -1,75 +1,156 @@
-# ultimine
+# File's Ultimine
 
-ultimine is an unofficial remake of Java's FTB Ultimine for Minecraft Bedrock, leveraging the Bedrock Script API.
+**File's Ultimine v1.3.3** — An unofficial Bedrock remake of Java's FTB Ultimine, featuring universal add-on compatibility, intelligent mining validation, and optimized performance.
 
-This repository contains the Bedrock scripting implementation and helper modules (see `index.js`, `utils.js`).
+This repository contains both the Behavior Pack (BP) with scripting and the Resource Pack (RP) for visual elements.
 
 Repository: [GamerFile/ultimine tree - main](https://github.com/GamerFile/ultimine/tree/main)
 
 ## Features
 
-- Fast block mining behavior inspired by FTB Ultimine (Java edition)
-- Built using the Bedrock Script API for Bedrock Edition
-- Lightweight, script-driven implementation suitable for behavior packs
+- **Universal Add-on Compatibility**: Automatically works with any custom tool, block, or ore from other behavior packs and add-ons. No manual configuration needed.
+- **Multiple Mining Patterns**: Shapeless, Small Tunnel, Small Square (3x3), Large Tunnel (3x3), Mining Tunnel, Escape Tunnel
+- **Intelligent Mining Validation**: Respects tool levels—you won't waste durability trying to mine blocks your tool can't harvest
+- **Performance Optimized**: 90% reduction in memory allocation during block highlights and mining. Stutter-free performance on all devices
+- **Smart Block Highlighting**: Resource-friendly preview holograms with responsive visual feedback
+- **Native Tool Actions**: 
+  - Create Farmland with Hoe
+  - Make Grass Paths with Shovel
+  - Strip logs with Axe
+  - Scrape copper blocks with Axe
+- **Massive Block Selection**: Mine up to 64 blocks at once
+- **Built with Bedrock Script API** using `@minecraft/server 2.6.0` and `@minecraft/common 1.2.0`
 
 ## Requirements
 
-- Minecraft Bedrock Edition (version supporting the Script API)
-- A behavior pack environment that allows Bedrock scripts (experimental features may be required)
+- **Minecraft Bedrock Edition** 1.21.100 or higher (Script API support required)
+- Both Behavior Pack (BP) and Resource Pack (RP) folders added to your Minecraft world
+- Experimental features enabled (Upcoming Creeper & Caves, API Features, Beta APIs)
+- A behavior pack environment that supports Bedrock scripts
 
 ## Quick Start
 
-1. Copy this repository into a behavior pack folder inside your Minecraft `com.mojang`/behavior_packs directory (or into your workspace if you use a pack-building tool).
-2. Ensure the behavior pack is added to your world and enabled in the world settings.
-3. Enable any required experimental gameplay features so that the Bedrock Script API is available.
-4. Restart the world so the scripts are loaded.
-
-Notes:
-- Place script entry files under a `scripts/` (or root) folder inside the behavior pack and reference them according to the Bedrock Script API manifest/module configuration for your target Minecraft version.
+1. **Download**: Clone or download this repository
+2. **Locate Minecraft Folder**: Navigate to `%appdata%\.minecraft\com.mojang\` (Windows) or equivalent on your platform
+3. **Install Packs**:
+   - Copy the `BP` folder to `com.mojang/behavior_packs/` (rename to `FileUltimineB` or similar)
+   - Copy the `RP` folder to `com.mojang/resource_packs/` (rename to `FileUltimineR` or similar)
+4. **Create World**:
+   - Launch Minecraft and create a new world
+   - In world settings, add both packs from the available list
+   - Enable required experimental features (API Features, Beta APIs, etc.)
+5. **Play**: Join the world and enjoy Ultimine!
 
 ## Installation
 
-- Manual: Copy the repository contents into your behavior pack folder and add the pack to your world.
-- With tooling: If you use a pack builder or pipeline for Bedrock add-ons, include the repository contents in the pack output and follow your tool's packaging steps.
+### Option 1: Manual Installation
+1. Copy `BP` folder to your behavior_packs directory
+2. Copy `RP` folder to your resource_packs directory
+3. Create a new world and apply both packs
+4. Enable experimental gameplay features for Script API support
+5. Restart the world if scripts don't load immediately
+
+### Option 2: With Pack Building Tools
+If you use a tool like **Ore UI**, **Blockbench**, or another Bedrock add-on builder:
+1. Import both BP and RP folders into your project
+2. Build/export the pack
+3. Follow the manual installation steps above
+
+### Note on Script Modules
+The scripts are configured in `BP/manifest.json`:
+- Entry point: `scripts/index.js`
+- Dependencies: `@minecraft/server` v2.6.0 and `@minecraft/common` v1.2.0
+- All event handling is modular (imported in `index.js`)
 
 ## Usage
 
-- The main entry point is `index.js`. Load this script as part of your behavior pack's script configuration.
-- The code is organized with helper functions in `utils.js`.
-- Tweak configuration in `index.js` (or other modules) to adjust mining radius, speed, or block filters for your use case.
+### In-Game Controls
+Once installed, simply hold a mining tool and look at a block. Ultimine will:
+1. **Highlight compatible blocks** in the mining pattern for your tool
+2. **Automatically mine groups** of compatible blocks when you break the target block
+3. **Apply tool-specific actions**:
+   - **Pickaxe**: Mine ore and stone blocks
+   - **Axe**: Fell trees, scrape copper, strip logs
+   - **Shovel**: Mine dirt, sand, snow, and create grass paths
+   - **Hoe**: Mine crops and create farmland
+   - **Custom Tools**: Work with any tool from other add-ons
 
-For details about configuring scripts in a behavior pack, refer to the Minecraft Bedrock Edition Script API documentation for your game version.
+### Configuration
+- **Mining Radius**: Up to 64 blocks can be mined at once
+- **Excluded Blocks**: Air, bedrock, water, lava, fire, light blocks, etc. are protected
+- **Pattern Selection**: Use hotbar slots to switch mining patterns (see `slotMessageMap` in `BP/scripts/config.js`)
 
-## Example (behavior pack layout)
+### Project Structure
+- `BP/scripts/index.js` — Entry point and event subscription hub
+- `BP/scripts/config.js` — Configuration, block groups, and mining patterns
+- `BP/scripts/mining.js` — Core mining logic and block validation
+- `BP/scripts/state.js` — Game state management
+- `BP/scripts/utils.js` — Utility functions
+- `BP/scripts/events/` — Event handlers (block break, interaction, combo input)
+- `RP/` — Visual assets (models, textures, animations, materials)
 
-A simple pack layout might look like:
-
-- my_behavior_pack/
-  - manifest.json
-  - scripts/
-    - index.js
-    - utils.js
-  - other files...
-
-Refer to official documentation to configure script modules/entries in `manifest.json` — the exact fields depend on the Bedrock version and script API you target.
+For detailed API information, refer to the official [Minecraft Bedrock Script API documentation](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/scripting/index)
 
 ## Development
 
-- This project is written in JavaScript. Edit the `.js` files and test by installing the behavior pack into a Bedrock instance.
-- Run quick manual tests in a local Bedrock world (enable experimental features as necessary).
+### Building & Testing
+1. Clone the repository
+2. Copy `BP` and `RP` folders to your behavior and resource pack directories
+3. Create a test world with both packs enabled
+4. Enable experimental features for Script API support
+5. Edit JavaScript files in `BP/scripts/` and test changes by reloading the world
+
+### Code Organization
+- **Modular Design**: Each feature is in its own module and imported in `index.js`
+- **Event-Driven**: Subscription-based architecture using Bedrock Script API events
+- **Performance-First**: Optimized algorithms for minimal memory and CPU usage
+- **Config-Driven**: Easy customization through `config.js`
+
+### Debugging Tips
+- Check Minecraft debug logs in `logs/` folder
+- Use `console.log()` in your scripts for debugging (output visible in debug logs)
+- Test with a single pack first (BP or RP separately) to isolate issues
 
 ## Contributing
 
-Contributions are welcome. Please open issues to discuss changes before sending larger pull requests. When opening PRs, include:
+Contributions are welcome! Please follow these guidelines:
 
-- A short description of the change
-- How to reproduce or test it
-- Any compatibility notes (target Bedrock version, required experimental flags)
+1. **Report Issues**: Open a GitHub issue with:
+   - Clear description of the problem or feature request
+   - Minecraft version and experimental features enabled
+   - Steps to reproduce (for bugs)
+   - Expected vs. actual behavior
+
+2. **Submit Pull Requests**: 
+   - Include a description of changes
+   - Test with the latest Minecraft version (1.21.100+)
+   - Mention any compatibility concerns
+   - Keep code style consistent with existing files
+   - Ensure compatibility with other add-ons
+
+3. **Code Standards**:
+   - Use ES6+ JavaScript
+   - Add comments for complex logic
+   - Follow existing naming conventions
+   - Test performance impact of changes
+
+For larger changes, please open an issue first to discuss the approach.
 
 ## License
 
-See the `LICENSE` file in this repository for licensing information.
+See the [LICENSE](LICENSE) file in this repository for full licensing information.
 
-## Contact
+## Changelog
 
-Raised issues on GitHub are the best way to report problems or request features.
+See [CHANGELOG.md](changelog.md) for a detailed history of updates, bug fixes, and new features.
+
+### Latest Release (v1.3.3)
+- **Axe Copper Scraping Support**: Axes can now select and scrape scrapable copper blocks
+- **Targeted Copper Validation**: Only valid scrapable copper states are highlighted
+- Refined tool interaction patterns
+
+## Support & Contact
+
+- **Issues & Bug Reports**: [Open an issue on GitHub](https://github.com/GamerFile/ultimine/issues)
+- **Discussions**: Use GitHub Discussions for feature requests and questions
+- **Compatibility**: Works with Minecraft Bedrock Edition 1.21.100+
