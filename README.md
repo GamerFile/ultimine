@@ -37,7 +37,6 @@ Repository: [GamerFile/ultimine tree - main](https://github.com/GamerFile/ultimi
 4. **Create World**:
    - Launch Minecraft and create a new world
    - In world settings, add both packs from the available list
-   - Enable required experimental features (API Features, Beta APIs, etc.)
 5. **Play**: Join the world and enjoy Ultimine!
 
 ## Installation
@@ -46,7 +45,6 @@ Repository: [GamerFile/ultimine tree - main](https://github.com/GamerFile/ultimi
 1. Copy `BP` folder to your behavior_packs directory
 2. Copy `RP` folder to your resource_packs directory
 3. Create a new world and apply both packs
-4. Enable experimental gameplay features for Script API support
 5. Restart the world if scripts don't load immediately
 
 ### Option 2: With Pack Building Tools
