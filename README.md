@@ -4,6 +4,8 @@ ultimine is an unofficial remake of Java's FTB Ultimine for Minecraft Bedrock, l
 
 This repository contains the Bedrock scripting implementation and helper modules (see `index.js`, `utils.js`).
 
+Repository: [GamerFile/ultimine tree - main](https://github.com/GamerFile/ultimine/tree/main)
+
 ## Features
 
 - Fast block mining behavior inspired by FTB Ultimine (Java edition)
