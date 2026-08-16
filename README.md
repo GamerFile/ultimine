@@ -106,7 +106,6 @@ For detailed API information, refer to the official [Minecraft Bedrock Script AP
 ### Debugging Tips
 - Check Minecraft debug logs in `logs/` folder
 - Use `console.log()` in your scripts for debugging (output visible in debug logs)
-- Test with a single pack first (BP or RP separately) to isolate issues
 
 ## Contributing
 
