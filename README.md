@@ -94,7 +94,6 @@ For detailed API information, refer to the official [Minecraft Bedrock Script AP
 1. Clone the repository
 2. Copy `BP` and `RP` folders to your behavior and resource pack directories
 3. Create a test world with both packs enabled
-4. Enable experimental features for Script API support
 5. Edit JavaScript files in `BP/scripts/` and test changes by reloading the world
 
 ### Code Organization
@@ -113,7 +112,6 @@ Contributions are welcome! Please follow these guidelines:
 
 1. **Report Issues**: Open a GitHub issue with:
    - Clear description of the problem or feature request
-   - Minecraft version and experimental features enabled
    - Steps to reproduce (for bugs)
    - Expected vs. actual behavior
 
