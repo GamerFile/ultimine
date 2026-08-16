@@ -47,13 +47,7 @@ Repository: [GamerFile/ultimine tree - main](https://github.com/GamerFile/ultimi
 3. Create a new world and apply both packs
 4. Restart the world if scripts don't load immediately
 
-### Option 2: With Pack Building Tools
-If you use a tool like **Ore UI**, **Blockbench**, or another Bedrock add-on builder:
-1. Import both BP and RP folders into your project
-2. Build/export the pack
-3. Follow the manual installation steps above
-
-### Option 3: Install from Releases & Tags (recommended for non-developers)
+### Option 2: Install from Releases & Tags (recommended for non-developers)
 You can install a released version without building from source by using the Releases or Tags on GitHub.
 
 - Using Releases:
