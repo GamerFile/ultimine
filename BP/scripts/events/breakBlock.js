@@ -47,7 +47,7 @@ world.beforeEvents.playerBreakBlock.subscribe(ev => {
         runJob(blocksToMine, (b) => {
             const bPos = Vec3(b);
             if (isCreative) {
-                b.dimension.runCommand(`setblock ${bPos.toUse()} air`);
+                b.setType("air");
                 return;
             }
 
@@ -55,7 +55,7 @@ world.beforeEvents.playerBreakBlock.subscribe(ev => {
             const loot = ltm.generateLootFromBlock(b, currentItem);
             const blockTypeId = b.typeId;
             // giveItem(player, loot);
-            loot.forEach(item => {
+            loot?.forEach(item => {
                 b.dimension.spawnItem(item, dropTarget);
             });
             b.setType("air");

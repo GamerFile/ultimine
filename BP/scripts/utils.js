@@ -105,109 +105,58 @@ function giveItem(entity, items) {
  */
 // const Vec3 = (x,y,z) => ({x,y,z, add: (x2,y2,z2) => Vec3(x + x2, y + y2, z + z2), mul: (x2,y2,z2) => Vec3(x * x2, y * y2, z * z2) })
 
-const Vec3 = (x, y, z) => (typeof x == 'object' && ({ x, y, z } = x), {
-    x,
-    y,
-    z,
+export class Vector3 {
+    constructor(x, y, z) {
+        if (typeof x === 'object' && x !== null) {
+            this.x = x.x;
+            this.y = x.y;
+            this.z = x.z;
+        } else {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
 
-    // Add raw components
-    add: (x2, y2, z2) => Vec3(x + x2, y + y2, z + z2),
-
-    // Add another vector object (e.g., Minecraft-style {x, y, z})
-    addV: (v) => Vec3(x + v.x, y + v.y, z + v.z),
-
-    // Multiply raw components
-    mul: (x2, y2, z2) => Vec3(x * x2, y * y2, z * z2),
-
-    // Multiply another vector
-    mulV: (v) => Vec3(x * v.x, y * v.y, z * v.z),
-
-    // Subtract raw components
-    sub: (x2, y2, z2) => Vec3(x - x2, y - y2, z - z2),
-
-    // Subtract another vector
-    subV: (v) => Vec3(x - v.x, y - v.y, z - v.z),
-
-    // Scale by scalar
-    scale: (s) => Vec3(x * s, y * s, z * s),
-
-    // Normalize
-    normalize: () => {
-        const len = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
-        return len === 0 ? Vec3(0, 0, 0) : Vec3(x / len, y / len, z / len);
-    },
-    // Map components
-    map: (fn) => Vec3(fn(x), fn(y), fn(z)),
-
-    // Lerp towards another vector (t = 0.0 to 1.0)
-    lerp: (v, t) => Vec3(x + (v.x - x) * t, y + (v.y - y) * t, z + (v.z - z) * t),
-
-    // Rotate around Y axis (in radians)
-    rotateY: (angle) => {
+    add(x2, y2, z2) { return new Vector3(this.x + x2, this.y + y2, this.z + z2); }
+    addV(v) { return new Vector3(this.x + v.x, this.y + v.y, this.z + v.z); }
+    mul(x2, y2, z2) { return new Vector3(this.x * x2, this.y * y2, this.z * z2); }
+    mulV(v) { return new Vector3(this.x * v.x, this.y * v.y, this.z * v.z); }
+    sub(x2, y2, z2) { return new Vector3(this.x - x2, this.y - y2, this.z - z2); }
+    subV(v) { return new Vector3(this.x - v.x, this.y - v.y, this.z - v.z); }
+    scale(s) { return new Vector3(this.x * s, this.y * s, this.z * s); }
+    normalize() {
+        const len = Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2);
+        return len === 0 ? new Vector3(0, 0, 0) : new Vector3(this.x / len, this.y / len, this.z / len);
+    }
+    map(fn) { return new Vector3(fn(this.x), fn(this.y), fn(this.z)); }
+    lerp(v, t) { return new Vector3(this.x + (v.x - this.x) * t, this.y + (v.y - this.y) * t, this.z + (v.z - this.z) * t); }
+    rotateY(angle) {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
-        return Vec3(x * cos - z * sin, y, x * sin + z * cos);
-    },
+        return new Vector3(this.x * cos - this.z * sin, this.y, this.x * sin + this.z * cos);
+    }
+    owx(v) { return new Vector3(v, this.y, this.z); }
+    owy(v) { return new Vector3(this.x, v, this.z); }
+    owz(v) { return new Vector3(this.x, this.y, v); }
+    length() { return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2); }
+    dot(v) { return this.x * v.x + this.y * v.y + this.z * v.z; }
+    crossV(v) { return new Vector3(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x); }
+    cross(x1, y1, z1) { return new Vector3(this.y * z1 - this.z * y1, this.z * x1 - this.x * z1, this.x * y1 - this.y * x1); }
+    distanceTo(v) { return Math.sqrt((this.x - v.x) ** 2 + (this.y - v.y) ** 2 + (this.z - v.z) ** 2); }
+    inV(v1, v2) { return this.x >= v1.x && this.x <= v2.x && this.y >= v1.y && this.y <= v2.y && this.z >= v1.z && this.z <= v2.z; }
+    in([x1, y1, z1], [x2, y2, z2]) { return this.x >= x1 && this.x <= x2 && this.y >= y1 && this.y <= y2 && this.z >= z1 && this.z <= z2; }
+    toString() { return `Vec3(${this.x.toFixed(2)}, ${this.y.toFixed(2)}, ${this.z.toFixed(2)})`; }
+    toUse() { return `${this.x} ${this.y} ${this.z}`; }
+    toKey() { return `${this.x},${this.y},${this.z}`; }
+    center() { return new Vector3(this.x + 0.5, this.y + 0.5, this.z + 0.5); }
+    floor() { return new Vector3(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z)); }
+    abs() { return new Vector3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z)); }
+    equals(v) { return this.x === v.x && this.y === v.y && this.z === v.z; }
+}
 
-    // Overwrite components
-    owx: (v) => Vec3(v, y, z),
-    owy: (v) => Vec3(x, v, z),
-    owz: (v) => Vec3(x, y, v),
-
-    // Length
-    length: () => Math.sqrt(x ** 2 + y ** 2 + z ** 2),
-
-    // Dot product
-    dot: (v) => x * v.x + y * v.y + z * v.z,
-
-    // Cross product
-    crossV: (v) =>
-        Vec3(
-            y * v.z - z * v.y,
-            z * v.x - x * v.z,
-            x * v.y - y * v.x
-        ),
-    cross: (x1, y1, z1) => Vec3(
-        y * z1 - z * y1,
-        z * x1 - x * z1,
-        x * y1 - y * x1
-    ),
-
-    // Distance to another vector
-    distanceTo: (v) =>
-        Math.sqrt(
-            (x - v.x) ** 2 +
-            (y - v.y) ** 2 +
-            (z - v.z) ** 2
-        ),
-    inV: (v1, v2) => {
-        return x >= v1.x && x <= v2.x && y >= v1.y && y <= v2.y && z >= v1.z && z <= v2.z;
-    },
-    in: ([x1, y1, z1], [x2, y2, z2]) => {
-        return x >= x1 && x <= x2 && y >= y1 && y <= y2 && z >= z1 && z <= z2;
-    },
-    // Debug string
-    toString: () => `Vec3(${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)})`,
-
-    toUse: () => `${x} ${y} ${z}`,
-
-    // Key for Set/Map lookups
-    toKey: () => `${x},${y},${z}`,
-
-    // Block center (add 0.5 to each axis)
-    center: () => Vec3(x + 0.5, y + 0.5, z + 0.5),
-
-    // Floor each component
-    floor: () => Vec3(Math.floor(x), Math.floor(y), Math.floor(z)),
-
-    // Absolute value
-    abs: () => Vec3(Math.abs(x), Math.abs(y), Math.abs(z)),
-
-    // Equality check
-    equals: (v) => x === v.x && y === v.y && z === v.z
-});
-//discarded as Vec3() now supports objects
-Vec3.convert = ({ x, y, z }) => Vec3(x, y, z)
+const Vec3 = (x, y, z) => new Vector3(x, y, z);
+Vec3.convert = ({ x, y, z }) => new Vector3(x, y, z);
 
 
 

@@ -1,4 +1,5 @@
 // Mining logic — block selection, tool validation, type matching
+import { world } from "@minecraft/server";
 import { Vec3 } from "utils";
 import { blockGroups, EXCLUDED_BLOCKS, SHEARABLE_BLOCKS, MAX_BLOCKS } from "./config.js";
 
@@ -14,18 +15,7 @@ export function canMine(block, tool, player) {
     }
 
     const blockId = block.typeId;
-
-    if (blockId.includes("log") || blockId.includes("leaves") || blockId.includes("dirt") ||
-        (blockId.includes("sand") && !blockId.includes("sandstone")) ||
-        blockId.includes("gravel") || blockId.includes("wood") || blockId.includes("plank") ||
-        blockId.includes("glass") || blockId.includes("wool") || blockId.includes("sponge") ||
-        blockId.includes("glowstone") || blockId.includes("mushroom") || blockId.includes("wart") ||
-        blockId.includes("stem") || blockId.includes("clay") || blockId.includes("mud")) {
-        return true;
-    }
-
     const toolId = tool ? tool.typeId : "";
-    let isPickaxe = toolId.includes("pickaxe");
 
     if (blockId.includes("snow") && !blockId.includes("snow_golem")) {
         return toolId.includes("shovel");
@@ -34,50 +24,17 @@ export function canMine(block, tool, player) {
         return toolId.includes("sword") || toolId.includes("shears");
     }
 
-    let pickTier = 0;
-    if (isPickaxe) {
-        if (toolId.includes("wood") || toolId.includes("gold")) pickTier = 1;
-        else if (toolId.includes("stone_") || toolId.includes("copper_")) pickTier = 2;
-        else if (toolId.includes("iron_")) pickTier = 3;
-        else if (toolId.includes("diamond_")) pickTier = 4;
-        else if (toolId.includes("netherite_")) pickTier = 5;
-    }
-
-    if (blockId.includes("obsidian") || blockId.includes("ancient_debris") ||
-        blockId.includes("netherite_block") || blockId.includes("respawn_anchor")) {
-        return pickTier >= 4;
-    }
-    if (blockId.includes("gold_or") || blockId.includes("diamond_or") ||
-        blockId.includes("emerald_or") || blockId.includes("redstone_or") ||
-        blockId.includes("lit_redstone_or") || blockId.includes("gold_block") ||
-        blockId.includes("diamond_block") || blockId.includes("emerald_block") ||
-        blockId.includes("raw_gold_block")) {
-        return pickTier >= 3;
-    }
-    if (blockId.includes("iron_or") || blockId.includes("copper_or") ||
-        blockId.includes("lapis_or") || blockId.includes("iron_block") ||
-        blockId.includes("copper_block") || blockId.includes("lapis_block") ||
-        blockId.includes("raw_iron_block") || blockId.includes("raw_copper_block") ||
-        blockId.includes("lightning_rod")) {
-        return pickTier >= 2;
-    }
-    if (blockId.includes("stone") || blockId.includes("deepslate") || blockId.includes("tuff") ||
-        blockId.includes("basalt") || blockId.includes("quartz") || blockId.includes("brick") ||
-        (blockId.includes("concrete") && !blockId.includes("powder")) || blockId.includes("terracotta") ||
-        blockId.includes("prismarine") || blockId.includes("purpur") || blockId.includes("shulker_box") ||
-        blockId.includes("cobble") || blockId.includes("andesite") || blockId.includes("diorite") ||
-        blockId.includes("granite") || blockId.includes("netherrack") || blockId.includes("end_stone") ||
-        blockId.includes("coal_or") || blockId.includes("iron_bars") || blockId.includes("hopper") ||
-        blockId.includes("cauldron") || blockId.includes("spawner") || blockId.includes("lantern") ||
-        blockId.includes("chain") || blockId.includes("bell") || blockId.includes("anvil") ||
-        blockId.includes("furnace") || blockId.includes("dispenser") || blockId.includes("enchanting_table") ||
-        blockId.includes("grinder") || blockId.includes("grindstone") || blockId.includes("smoker") ||
-        blockId.includes("blast_furnace") || blockId.includes("magma") || blockId.includes("bone_block")) {
-        return pickTier >= 1;
-    }
+    // Leverage generateLootFromBlock to check if tool is sufficient to harvest the block.
+    // The API returns undefined if the provided tool is insufficient.
+    try {
+        const ltm = world.getLootTableManager();
+        const loot = ltm.generateLootFromBlock(block, tool);
+        if (loot === undefined) return false;
+    } catch (e) { }
 
     return true;
 }
+
 
 export function isSameType(id1, id2) {
     if (id1 === id2) return true;
@@ -93,6 +50,20 @@ export function isSameType(id1, id2) {
         if (group.has(id1) && group.has(id2)) return true;
     }
     return false;
+}
+
+function insertSorted(queue, item) {
+    let low = 0;
+    let high = queue.length;
+    while (low < high) {
+        const mid = (low + high) >>> 1;
+        if (queue[mid].cost < item.cost) {
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }
+    queue.splice(low, 0, item);
 }
 
 export function getBlocksForMode(startBlock, face, viewDir, mode, tool, player) {
@@ -120,7 +91,6 @@ export function getBlocksForMode(startBlock, face, viewDir, mode, tool, player) 
         blockIds.add(startLoc.toKey());
 
         while (queue.length > 0 && blocksToMine.length < MAX_BLOCKS) {
-            queue.sort((a, b) => a.cost - b.cost);
             const current = queue.shift().b;
             blocksToMine.push(current);
 
@@ -149,7 +119,7 @@ export function getBlocksForMode(startBlock, face, viewDir, mode, tool, player) 
                                 try {
                                     const neighbor = current.dimension.getBlock(nPos);
                                     if (neighbor && isSameType(neighbor.typeId, targetType) && canMine(neighbor, tool, player)) {
-                                        queue.push({ b: neighbor, cost });
+                                        insertSorted(queue, { b: neighbor, cost });
                                     }
                                 } catch (e) { }
                             }

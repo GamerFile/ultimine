@@ -49,7 +49,7 @@ system.runInterval(() => {
                 clearHighlights(player);
                 data.lastTarget = null;
                 player.onScreenDisplay.setActionBar(`Selected ${slotMessageMap[data.slot]} §c(Low Hunger)`);
-            } else {
+            } else if (system.currentTick % 2 === 0) {
                 const hit = player.getBlockFromViewDirection({ maxDistance: 8 });
                 if (hit && hit.block) {
                     const blockPos = Vec3(hit.block);

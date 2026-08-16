@@ -2,12 +2,12 @@
   "format_version": 2,
   "header": {
     "name": "File's Ultimine RP",
-    "description": "Ultimine Resource Pack v1.2.2",
+    "description": "Ultimine Resource Pack v1.3.1",
     "uuid": "b7e3c8a1-5f2d-4e9a-8c1b-3a7d6e9f0b2c",
     "version": [
       1,
-      2,
-      2
+      3,
+      1
     ],
     "min_engine_version": [
       1,
@@ -21,8 +21,8 @@
       "uuid": "d4f1a2b3-6c7e-4d8f-9e0a-1b2c3d4e5f6a",
       "version": [
         1,
-        2,
-        2
+        3,
+        1
       ]
     }
   ],

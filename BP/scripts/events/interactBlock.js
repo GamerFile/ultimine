@@ -101,16 +101,16 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
             if (targetBlockId && targetBlockId !== targetType) {
                 try {
                     if (action === "till" && targetBlockId === "minecraft:farmland") {
-                        b.dimension.runCommand(`setblock ${bPos.toUse()} farmland`);
+                        b.setType("minecraft:farmland");
                     } else if (action === "till" && targetBlockId === "minecraft:dirt") {
-                        b.dimension.runCommand(`setblock ${bPos.toUse()} dirt`);
+                        b.setType("minecraft:dirt");
                         if (targetType === "minecraft:dirt_with_roots") {
                             try {
                                 b.dimension.spawnItem(new ItemStack("minecraft:hanging_roots", 1), bPos.center());
                             } catch (e) { }
                         }
                     } else if (action === "shove") {
-                        b.dimension.runCommand(`setblock ${bPos.toUse()} grass_path`);
+                        b.setType("minecraft:grass_path");
                     } else {
                         const blockPerm = b.permutation;
                         const states = blockPerm.getAllStates();
@@ -118,7 +118,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
                         b.setPermutation(newPerm);
                     }
                 } catch (e) {
-                    b.dimension.runCommand(`setblock ${bPos.toUse()} ${targetBlockId.replace("minecraft:", "")}`);
+                    b.setType(targetBlockId);
                 }
 
                 if (!isCreative) {
