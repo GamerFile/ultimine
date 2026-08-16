@@ -23,22 +23,9 @@ export const EXCLUDED_BLOCKS = new Set([
     "minecraft:barrier"
 ]);
 
-export const SHEARABLE_BLOCKS = new Set([
-    "minecraft:leaves", "minecraft:leaves2",
-    "minecraft:azalea_leaves", "minecraft:azalea_leaves_flowered",
-    "minecraft:mangrove_leaves", "minecraft:cherry_leaves",
-    "minecraft:vine", "minecraft:cobweb",
-    "minecraft:short_grass", "minecraft:tall_grass",
-    "minecraft:fern", "minecraft:large_fern",
-    "minecraft:dead_bush", "minecraft:seagrass",
-    "minecraft:glow_lichen", "minecraft:hanging_roots",
-    "minecraft:nether_sprouts", "minecraft:twisting_vines",
-    "minecraft:weeping_vines", "minecraft:cave_vines",
-    "minecraft:cave_vines_body_with_berries", "minecraft:cave_vines_head_with_berries"
-]);
 
 export const blockGroups = [
-    new Set(["minecraft:dirt", "minecraft:grass_block", "minecraft:dirt_with_roots", "minecraft:grass_path", "minecraft:podzol", "minecraft:mycelium", "minecraft:farmland"]),
+    new Set(["minecraft:dirt", "minecraft:grass_block", "minecraft:grass_path", "minecraft:podzol", "minecraft:mycelium"]),
     new Set(["minecraft:stone", "minecraft:andesite", "minecraft:diorite", "minecraft:granite"]),
     new Set(["minecraft:tuff", "minecraft:deepslate"]),
     new Set(["minecraft:coal_ore", "minecraft:deepslate_coal_ore"]),

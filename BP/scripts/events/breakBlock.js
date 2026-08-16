@@ -1,5 +1,5 @@
 // Block break event handler
-import { Dimension, system, world } from "@minecraft/server";
+import { system, world } from "@minecraft/server";
 import { Vec3, giveItem, runJob } from "utils";
 import { getPlayerData, clearHighlights, isHungry } from "../state.js";
 import { getBlocksForMode, isOre } from "../mining.js";
@@ -51,16 +51,15 @@ world.beforeEvents.playerBreakBlock.subscribe(ev => {
                 return;
             }
 
-            // Generate loot using the loot table (handles fortune, silk touch, shears, etc.)
+
             const loot = ltm.generateLootFromBlock(b, currentItem);
             const blockTypeId = b.typeId;
-            // giveItem(player, loot);
+
             loot?.forEach(item => {
                 b.dimension.spawnItem(item, dropTarget);
             });
             b.setType("air");
 
-            // Ore XP (loot tables don't produce XP orbs)
             if (isOre(blockTypeId) && !hasSilkTouch) {
                 try {
                     b.dimension.runCommand(`summon xp_orb ${dropTarget.toUse()}`);

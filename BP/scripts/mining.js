@@ -1,10 +1,9 @@
 // Mining logic — block selection, tool validation, type matching
 import { world } from "@minecraft/server";
 import { Vec3 } from "utils";
-import { blockGroups, EXCLUDED_BLOCKS, SHEARABLE_BLOCKS, MAX_BLOCKS } from "./config.js";
+import { blockGroups, EXCLUDED_BLOCKS, MAX_BLOCKS } from "./config.js";
 
 export const isOre = (id) => id.includes("ore") || id.includes("ancient_debris");
-export const isShearable = (id) => SHEARABLE_BLOCKS.has(id) || id.includes("leaves");
 
 export function canMine(block, tool, player) {
     if (player) {
@@ -24,8 +23,12 @@ export function canMine(block, tool, player) {
         return toolId.includes("sword") || toolId.includes("shears");
     }
 
-    // Leverage generateLootFromBlock to check if tool is sufficient to harvest the block.
-    // The API returns undefined if the provided tool is insufficient.
+    // Axe scraping exception: only scrapable copper blocks (waxed, oxidized, weathered, exposed)
+    if (toolId.includes("axe") && blockId.includes("copper") && (blockId.includes("waxed_") || blockId.includes("oxidized_") || blockId.includes("weathered_") || blockId.includes("exposed_"))) {
+        return true;
+    }
+
+    //Native Approach
     try {
         const ltm = world.getLootTableManager();
         const loot = ltm.generateLootFromBlock(block, tool);

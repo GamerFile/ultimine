@@ -29,7 +29,9 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
     } else if (isShovel && (bType === "minecraft:grass_block" || bType === "minecraft:podzol" || bType === "minecraft:coarse_dirt" || bType === "minecraft:mycelium" || bType === "minecraft:dirt")) {
         action = "shove";
     } else if (isAxe) {
-        if (bType.includes("copper") || bType.includes("log") || bType.includes("wood")) {
+        const isScrapableCopper = bType.includes("copper") && (bType.includes("waxed_") || bType.includes("oxidized_") || bType.includes("weathered_") || bType.includes("exposed_"));
+        const isStrippableWood = (bType.includes("log") || bType.includes("wood")) && !bType.includes("stripped_");
+        if (isScrapableCopper || isStrippableWood) {
             action = "scrape";
         }
     }
@@ -95,7 +97,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
                 else if ((targetType.includes("log") || targetType.includes("wood")) && !targetType.includes("stripped_")) {
                     targetBlockId = targetType.replace("minecraft:", "minecraft:stripped_");
                 }
-                if (targetBlockId == "minecraft:copper") targetBlockId = "copper_block"
+                if (targetBlockId === "minecraft:copper" || targetBlockId === "copper") targetBlockId = "minecraft:copper_block";
             }
 
             if (targetBlockId && targetBlockId !== targetType) {

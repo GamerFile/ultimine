@@ -27,50 +27,6 @@ function getDist(loc1, loc2) {
 
 
 
-/**
- * 
- * @param {Number} val 
- * @param {Number} min 
- * @param {Number} max 
- * @returns Number
- */
-const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
-
-/**
- * 
- * @param {Array} arr1 
- * @param {Array} arr2 
- * @returns {Boolean}
- */
-function sameArray(arr1, arr2) {
-    if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false
-    if (arr1.length !== arr2.length) return false
-    for (let i in arr1) {
-        if (arr1[i] !== arr2[i]) return false
-    }
-    return true
-}
-/**
- * 
- * @param {ItemStack} toItem 
- * @param {ItemStack} fromItem 
- * @returns {Number | void}
- */
-function stackNum(fromItem, toItem) {
-    if (!fromItem || !toItem) return
-    if (toItem.isStackableWith(fromItem)) {
-        const toAmt = toItem.amount
-        const fromAmt = fromItem.amount
-        if (toAmt < toItem.maxAmount) {
-            const diff = toItem.maxAmount - toAmt
-            if (diff <= fromAmt) {
-                return diff
-            } else if (diff > fromAmt) {
-                return fromAmt
-            }
-        }
-    }
-}
 
 /**
  * 
@@ -162,84 +118,6 @@ Vec3.convert = ({ x, y, z }) => new Vector3(x, y, z);
 
 
 /**
- * 
- * @param {import("@minecraft/server").Vector3} a 
- * @param {import("@minecraft/server").Vector3} b 
- * @returns {import("@minecraft/server").Vector3}
- */
-function addVec3(a, b) {
-    return Vec3(a.x + b.x, a.y + b.y, a.z + b.z)
-}
-
-/**
- * 
- * @param {import("@minecraft/server").Vector3} a 
- * @param {import("@minecraft/server").Vector3} b 
- * @returns {import("@minecraft/server").Vector3}
- */
-function multiplyVec3(a, b) {
-    return Vec3(a.x * b.x, a.y * b.y, a.z * b.z)
-}
-
-function* range(from, to, skip = 1) {
-    !(!!(to)) && ((to = from), (from = 0))
-    for (let i = from; i < to; i += skip) yield i
-}
-
-//@debug
-const jsonStringify = (obj, indent = 2) => {
-    const color = {
-        key: '§6',       // gold
-        string: '§a',    // green
-        number: '§b',    // aqua
-        boolean: '§d',   // light purple
-        null: '§8',      // dark gray
-        brace: '§f'      // white
-    };
-
-    const replacer = (value, depth = 0) => {
-        const pad = ' '.repeat(indent * depth);
-
-        if (value === null) return color.null + 'null' + color.brace;
-        if (Array.isArray(value)) {
-            const items = value.map(v => replacer(v, depth + 1));
-            return color.brace + '[\n' + items.map(i => pad + ' '.repeat(indent) + i).join(',\n') + '\n' + pad + ']' + color.brace;
-        }
-        if (typeof value === 'object') {
-            const entries = Object.entries(value).map(([k, v]) =>
-                pad + ' '.repeat(indent) + color.key + `"${k}"` + color.brace + ': ' + replacer(v, depth + 1)
-            );
-            return color.brace + '{\n' + entries.join(',\n') + '\n' + pad + '}' + color.brace;
-        }
-        switch (typeof value) {
-            case 'string': return color.string + `"${value}"` + color.brace;
-            case 'number': return color.number + value + color.brace;
-            case 'boolean': return color.boolean + value + color.brace;
-            default: return color.brace + String(value);
-        }
-    };
-
-    return replacer(obj);
-};
-/**
- * 
- * @param {Number} ms 
- * @returns {String}
- */
-function formatTime(ms) {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) return `${days}d ${hours % 24}h`;
-    if (hours > 0) return `${hours}h ${minutes % 60}m`;
-    if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
-    return `${seconds}s`;
-}
-
-
-/**
  * Runs a job by processing items in chunks to avoid watchdog termination,
  * while creating a smooth proportional "block by block" visual animation.
  * @template T
@@ -274,4 +152,4 @@ function runJob(items, processFn, onDone) {
     }, 1); // Every 1 tick for a smooth effect
 }
 
-export { clamp, stackNum, sameArray, giveItem, Vec3, formatTime, range, runJob };
+export { giveItem, Vec3, runJob };
