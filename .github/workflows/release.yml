@@ -1,84 +1,60 @@
-name: Build and publish release
+name: Auto Release MCADDON
 
+# Trigger the workflow only when changelog.md is modified on the main branch
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - 'v*'
-
-permissions:
-  contents: write
+    branches:
+      - main
+    paths:
+      - 'changelog.md'
 
 jobs:
-  release:
+  build-and-release:
     runs-on: ubuntu-latest
+    
+    # Required permission to create a release in your repository
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get version from changelog
-        id: version
+      - name: Extract version from changelog
+        id: get_version
         run: |
-          if [ -f changelog.md ]; then
-            VERSION=$(grep -m1 -oP '\d+\.\d+\.\d+' changelog.md || true)
-            if [ -z "$VERSION" ]; then
-              echo "No version found in changelog.md" >&2
-              exit 1
-            fi
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-          else
-            echo "changelog.md not found" >&2
+          # Uses regex to find the first standard version number (e.g., 1.0.0 or 1.2.4)
+          # -m 1 ensures it only grabs the very first match it finds at the top of the file
+          VERSION=$(grep -m 1 -oE '[0-9]+\.[0-9]+\.[0-9]+' changelog.md)
+          
+          if [ -z "$VERSION" ]; then
+            echo "Error: No version number found in changelog.md"
             exit 1
           fi
+          
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Prepare release notes file
+      - name: Zip folders and name .mcaddon
+        id: build
+        env:
+          # Automatically grabs your repository's name
+          REPO_NAME: ${{ github.event.repository.name }}
+          VERSION: ${{ steps.get_version.outputs.version }}
         run: |
-          cp changelog.md release_notes.md
+          # Format: repo-name-1.0.0.mcaddon
+          FILE_NAME="${REPO_NAME}-${VERSION}.mcaddon"
+          
+          # The zip command can create the .mcaddon extension directly
+          zip -r "$FILE_NAME" BP RP
+          
+          echo "file_name=$FILE_NAME" >> $GITHUB_OUTPUT
 
-      - name: Build .mcaddon and zip BP/RP
-        run: |
-          VERSION=${{ steps.version.outputs.version }}
-          mkdir -p release_tmp
-          cp -r BP RP release_tmp/
-          cd release_tmp
-          zip -r "../ultimine-${VERSION}.mcaddon" BP RP
-          cd ..
-          zip -r "ultimine-${VERSION}-BP.zip" BP
-          zip -r "ultimine-${VERSION}-RP.zip" RP
-          ls -l
-
-      - name: Create GitHub release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          body_path: release_notes.md
-          draft: false
-          prerelease: false
-
-      - name: Upload .mcaddon asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "ultimine-${{ steps.version.outputs.version }}.mcaddon"
-          asset_name: "ultimine-${{ steps.version.outputs.version }}.mcaddon"
-          asset_content_type: application/zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload BP zip
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "ultimine-${{ steps.version.outputs.version }}-BP.zip"
-          asset_name: "ultimine-${{ steps.version.outputs.version }}-BP.zip"
-          asset_content_type: application/zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload RP zip
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "ultimine-${{ steps.version.outputs.version }}-RP.zip"
-          asset_name: "ultimine-${{ steps.version.outputs.version }}-RP.zip"
-          asset_content_type: application/zip
-          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: ${{ github.event.repository.name }} v${{ steps.get_version.outputs.version }}
+          files: ${{ steps.build.outputs.file_name }}
+          # Optional: This pulls the text from your changelog into the release notes!
+          body_path: changelog.md
