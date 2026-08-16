@@ -25,7 +25,6 @@ Repository: [GamerFile/ultimine tree - main](https://github.com/GamerFile/ultimi
 
 - **Minecraft Bedrock Edition** 1.21.100 or higher (Script API support required)
 - Both Behavior Pack (BP) and Resource Pack (RP) folders added to your Minecraft world
-- Experimental features enabled (Upcoming Creeper & Caves, API Features, Beta APIs)
 - A behavior pack environment that supports Bedrock scripts
 
 ## Quick Start
