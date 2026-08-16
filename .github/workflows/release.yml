@@ -1,0 +1,82 @@
+name: Build and publish release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from changelog
+        id: version
+        run: |
+          if [ -f changelog.md ]; then
+            VERSION=$(grep -m1 -oP '\d+\.\d+\.\d+' changelog.md || true)
+            if [ -z "$VERSION" ]; then
+              echo "No version found in changelog.md" >&2
+              exit 1
+            fi
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "changelog.md not found" >&2
+            exit 1
+          fi
+
+      - name: Prepare release notes file
+        run: |
+          cp changelog.md release_notes.md
+
+      - name: Build .mcaddon and zip BP/RP
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          mkdir -p release_tmp
+          cp -r BP RP release_tmp/
+          cd release_tmp
+          zip -r "../ultimine-${VERSION}.mcaddon" BP RP
+          cd ..
+          zip -r "ultimine-${VERSION}-BP.zip" BP
+          zip -r "ultimine-${VERSION}-RP.zip" RP
+          ls -l
+
+      - name: Create GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: v${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+
+      - name: Upload .mcaddon asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "ultimine-${{ steps.version.outputs.version }}.mcaddon"
+          asset_name: "ultimine-${{ steps.version.outputs.version }}.mcaddon"
+          asset_content_type: application/zip
+
+      - name: Upload BP zip
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "ultimine-${{ steps.version.outputs.version }}-BP.zip"
+          asset_name: "ultimine-${{ steps.version.outputs.version }}-BP.zip"
+          asset_content_type: application/zip
+
+      - name: Upload RP zip
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "ultimine-${{ steps.version.outputs.version }}-RP.zip"
+          asset_name: "ultimine-${{ steps.version.outputs.version }}-RP.zip"
+          asset_content_type: application/zip
