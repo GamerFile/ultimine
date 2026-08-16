@@ -1,14 +1,13 @@
-# Changelog - Files Ultimine v1.2.1
+# Changelog - Files Ultimine v1.2.2
 
-## [1.2.1] - Silk Touch & Combo Fixes
+## [1.2.2] - The Loot Table Update
 
-An update addressing drop rules compatibility and hotbar control fixes.
+Integrated Bedrock's native loot table manager to simplify drop logic and remove hardcoded configurations.
 
 ### Added
-- **Silk Touch Blocks Harvest**:
-  - Added block collections and validations in `config.js` (`SILK_TOUCH_SELF_DROP` and `isSilkTouchable`) to track blocks that require Silk Touch to harvest themselves (e.g. ice, amethyst buds, beehives, nylium, grass block).
-  - Integrated harvesting logic in `breakBlock.js` to spawn the correct drop block when mined with Silk Touch.
-
-### Fixed
-- **Hotbar Index Boundary Check**:
-  - Moved invalid selected slot checks (> 5) into the main tick loop, fixing index range exceptions when scrolling hotbars while holding sneak.
+- **Native Loot Tables Integration**:
+  - Replaced manual drop calculations, fortune multipliers, and drop lists with Minecraft's native `LootTableManager.generateLootFromBlock(block, tool)`.
+  - Cleared out custom block-to-drop mapping directories (`oreDropMap` and `SILK_TOUCH_SELF_DROP`) from `config.js`.
+  - Drops are generated dynamically using survival rules and teleported directly to the primary mined coordinates block.
+- **XP Gating**:
+  - Maintained `/summon xp_orb` command triggers for ore blocks mined without Silk Touch, as vanilla loot tables do not generate XP.

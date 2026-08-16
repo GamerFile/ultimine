@@ -2,12 +2,12 @@
 	"format_version": 2,
 	"header": {
 		"name": "File's Ultimine",
-		"description": "Ultimine Behavior Pack v1.2.1",
+		"description": "Ultimine Behavior Pack v1.2.2",
 		"uuid": "104eb090-6a31-4597-9356-ea371765dd31",
 		"version": [
 			1,
 			2,
-			1
+			2
 		],
 		"min_engine_version": [
 			1,
@@ -24,7 +24,7 @@
 			"version": [
 				1,
 				2,
-				1
+				2
 			]
 		},
 		{
@@ -34,7 +34,7 @@
 			"version": [
 				1,
 				2,
-				1
+				2
 			]
 		}
 	],
@@ -57,7 +57,7 @@
 			"version": [
 				1,
 				2,
-				1
+				2
 			]
 		}
 	],
