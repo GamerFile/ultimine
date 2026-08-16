@@ -15,42 +15,52 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
-      - name: Get version from changelog
+      - name: Get version from changelog (with fallback to origin/main)
         id: version
         run: |
+          # Prefer changelog.md from the checked-out commit (tag). If missing, fall back to origin/main.
           if [ -f changelog.md ]; then
-            VERSION=$(grep -m1 -oP '\d+\.\d+\.\d+' changelog.md || true)
-            if [ -z "$VERSION" ]; then
-              echo "No version found in changelog.md" >&2
+            echo "Found changelog.md in checked out commit"
+            cp changelog.md release_notes.md
+          else
+            echo "changelog.md not found in checked out commit — attempting to fetch from origin/main"
+            git fetch origin main --depth=1 || git fetch origin main
+            if git show origin/main:changelog.md > release_notes.md 2>/dev/null; then
+              echo "Using changelog.md from origin/main"
+            else
+              echo "changelog.md not found in origin/main either" >&2
               exit 1
             fi
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-          else
-            echo "changelog.md not found" >&2
-            exit 1
           fi
 
-      - name: Prepare release notes file
-        run: |
-          cp changelog.md release_notes.md
+          VERSION=$(grep -m1 -oP '\d+\.\d+\.\d+' release_notes.md || true)
+          if [ -z "$VERSION" ]; then
+            echo "No version found in changelog.md" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Build .mcaddon and zip BP/RP
         run: |
           VERSION=${{ steps.version.outputs.version }}
           mkdir -p release_tmp
-          cp -r BP RP release_tmp/
-          cd release_tmp
-          zip -r "../ultimine-${VERSION}.mcaddon" BP RP
+          cp -r BP RP release_tmp/ || true
+          cd release_tmp || exit 1
+          zip -r "../ultimine-${VERSION}.mcaddon" BP RP || true
           cd ..
-          zip -r "ultimine-${VERSION}-BP.zip" BP
-          zip -r "ultimine-${VERSION}-RP.zip" RP
-          ls -l
+          zip -r "ultimine-${VERSION}-BP.zip" BP || true
+          zip -r "ultimine-${VERSION}-RP.zip" RP || true
+          ls -l || true
 
       - name: Create GitHub release
         id: create_release
         uses: actions/create-release@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v${{ steps.version.outputs.version }}
           release_name: v${{ steps.version.outputs.version }}
           body_path: release_notes.md
@@ -58,6 +68,7 @@ jobs:
           prerelease: false
 
       - name: Upload .mcaddon asset
+        if: steps.create_release.outputs.upload_url != ''
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -66,6 +77,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload BP zip
+        if: steps.create_release.outputs.upload_url != ''
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -74,6 +86,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload RP zip
+        if: steps.create_release.outputs.upload_url != ''
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
