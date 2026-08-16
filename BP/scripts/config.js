@@ -63,3 +63,48 @@ export const oreDropMap = {
     "minecraft:lit_redstone_ore": "minecraft:redstone", "minecraft:lit_deepslate_redstone_ore": "minecraft:redstone",
     "minecraft:nether_quartz_ore": "minecraft:quartz", "minecraft:nether_gold_ore": "minecraft:gold_nugget"
 };
+
+
+export const SILK_TOUCH_SELF_DROP = new Set([
+    // Amethyst
+    "minecraft:small_amethyst_bud", "minecraft:medium_amethyst_bud", "minecraft:large_amethyst_bud",
+    "minecraft:amethyst_cluster",
+    // Bee
+    "minecraft:bee_nest", "minecraft:beehive",
+    // Nature / terrain
+    "minecraft:blue_ice", "minecraft:packed_ice", "minecraft:ice",
+    "minecraft:grass_block", "minecraft:grass_path", "minecraft:mycelium", "minecraft:podzol",
+    "minecraft:stone", "minecraft:deepslate",
+    "minecraft:crimson_nylium", "minecraft:warped_nylium",
+    // Crafted / utility
+    "minecraft:bookshelf", "minecraft:chiseled_bookshelf",
+    "minecraft:campfire", "minecraft:soul_campfire",
+    "minecraft:ender_chest",
+    "minecraft:glowstone",
+    "minecraft:sea_lantern",
+    "minecraft:clay",
+    "minecraft:snow", "minecraft:snow_layer",
+    // Redstone
+    "minecraft:gilded_blackstone",
+    "minecraft:creaking_heart",
+    // Crops / plants (drop self only with silk touch)
+    "minecraft:melon_block",
+    "minecraft:mushroom_stem", "minecraft:brown_mushroom_block", "minecraft:red_mushroom_block",
+    "minecraft:turtle_egg",
+    "minecraft:twisting_vines", "minecraft:weeping_vines",
+    // Sculk
+    "minecraft:sculk", "minecraft:sculk_catalyst", "minecraft:sculk_sensor",
+    "minecraft:calibrated_sculk_sensor", "minecraft:sculk_shrieker", "minecraft:sculk_vein",
+    // Decorated pot
+    "minecraft:decorated_pot",
+]);
+
+const SILK_TOUCH_PATTERNS = ["glass", "leaves", "coral", "infested"];
+
+export function isSilkTouchable(id) {
+    if (SILK_TOUCH_SELF_DROP.has(id)) return true;
+    for (const p of SILK_TOUCH_PATTERNS) {
+        if (id.includes(p)) return true;
+    }
+    return false;
+}

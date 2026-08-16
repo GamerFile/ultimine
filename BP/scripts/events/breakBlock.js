@@ -1,7 +1,7 @@
 // Block break event handler
 import { system, world, ItemStack } from "@minecraft/server";
 import { Vec3, runJob } from "utils";
-import { oreDropMap } from "../config.js";
+import { oreDropMap, isSilkTouchable } from "../config.js";
 import { getPlayerData, clearHighlights, isHungry } from "../state.js";
 import { getBlocksForMode, isOre, isShearable } from "../mining.js";
 
@@ -93,6 +93,14 @@ world.beforeEvents.playerBreakBlock.subscribe(ev => {
                         b.dimension.runCommand(`summon xp_orb ${dropTarget.toUse()}`);
                     } catch (e) { }
                 }
+            } else if (hasSilkTouch && isSilkTouchable(b.typeId)) {
+                // Silk touch: drop the block itself
+                try {
+                    const itemToDrop = new ItemStack(b.typeId, 1);
+                    b.dimension.runCommand(`setblock ${bPos.toUse()} air`);
+                    const e = b.dimension.spawnItem(itemToDrop, bPos);
+                    e.teleport(dropTarget);
+                } catch (e) { }
             } else if (hasShears && isShearable(b.typeId)) {
                 try {
                     const itemToDrop = new ItemStack(b.typeId, 1);

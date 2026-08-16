@@ -34,6 +34,10 @@ system.runInterval(() => {
 
         if (data.step === 0 && !isSneaking && data.wasSneaking && data.slot !== -1 && data.active) {
             data.active = false;
+            if (data.slot > 5) {
+                data.slot = -1;
+                player.onScreenDisplay.setActionBar("§cInvalid Mode Selected");
+            }
         }
 
         data.wasSneaking = isSneaking;
@@ -112,10 +116,6 @@ Player.prototype.onComboComplete = function () {
         this.playSound("random.orb", { pitch: 0.5 });
         data.slot = -1;
         clearHighlights(this);
-        return;
-    }
-    if (this.selectedSlotIndex > 5) {
-        this.sendMessage("§cInvalid Mode Selected");
         return;
     }
     this.sendMessage("§bUltimine Activated");
