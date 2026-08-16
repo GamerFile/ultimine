@@ -1,0 +1,48 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "file:selected_block",
+      "materials": { "default": "glow_in_walls" },
+      "textures": { "default": "textures/entity/ultimine/white" },
+      "geometry": { "default": "geometry.file.selected_block" },
+      "scripts": {
+        "scale": "1.005",
+        "initialize": [
+          "v.show = false;",
+          "v.north = false;", "v.south = false;",
+          "v.east = false;", "v.west = false;",
+          "v.up = false;", "v.down = false;",
+          "v.ne = false;", "v.nw = false;",
+          "v.se = false;", "v.sw = false;",
+          "v.bn = false;", "v.bs = false;",
+          "v.be = false;", "v.bw = false;",
+          "v.tn = false;", "v.ts = false;",
+          "v.te = false;", "v.tw = false;"
+        ],
+        "pre_animation": [
+          "v.visible_ne = ( (!v.north && !v.east) || (!v.north && v.east && v.ne) || (v.north && !v.east && v.ne) );",
+          "v.visible_nw = ( (!v.north && !v.west) || (!v.north && v.west && v.nw) || (v.north && !v.west && v.nw) );",
+          "v.visible_bn = ( (!v.north && !v.down) || (v.down && v.bn && !v.north) || (!v.down && v.bn && v.north) );",
+          "v.visible_tn = ( (!v.north && !v.up) || (v.up && v.tn && !v.north) || (!v.up && v.tn && v.north) );",
+
+          "v.visible_se = ( (!v.south && !v.east) || (!v.south && v.east && v.se) || (v.south && !v.east && v.se) );",
+          "v.visible_sw = ( (!v.south && !v.west) || (!v.south && v.west && v.sw) || (v.south && !v.west && v.sw) );",
+          "v.visible_bs = ( (!v.south && !v.down) || (v.down && v.bs && !v.south) || (!v.down && v.bs && v.south) );",
+          "v.visible_ts = ( (!v.south && !v.up) || (v.up && v.ts && !v.south) || (!v.up && v.ts && v.south) );",
+
+          "v.visible_be = ( (!v.down && !v.east) || (v.down && v.be && !v.east) || (!v.down && v.be) );",
+          "v.visible_bw = ( (!v.down && !v.west) || (v.down && v.bw && !v.west) || (!v.down && v.bw) );",
+          "v.visible_te = ( (!v.up && !v.east) || (v.up && v.te && !v.east) || (!v.up && v.te) );",
+          "v.visible_tw = ( (!v.up && !v.west) || (v.up && v.tw && !v.west) || (!v.up && v.tw) );"
+        ]
+      },
+      "animations": {
+        "edges": "animation.file.selected_block.edges"
+      },
+      "render_controllers": [
+        { "controller.render.file.selected_block": "v.show" }
+      ]
+    }
+  }
+}

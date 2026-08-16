@@ -1,0 +1,38 @@
+{
+  "format_version": "1.19.30",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "file:selected_block",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "file:despawn": {
+        "minecraft:instant_despawn": {}
+      }
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["ultimine_highlight"] },
+      "minecraft:timer": {
+        "looping": false,
+        "time": 5,
+        "time_down_event": { "event": "file:despawn" }
+      },
+      "minecraft:damage_sensor": {
+        "triggers": { "cause": "all", "deals_damage": false }
+      },
+      "minecraft:fire_immune": true,
+      "minecraft:movement": { "value": 0.0 },
+      "minecraft:collision_box": { "width": 0, "height": 0 },
+      "minecraft:physics": { "has_collision": false, "has_gravity": false },
+      "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false },
+      "minecraft:water_movement": { "drag_factor": 0 }
+    },
+    "events": {
+      "file:despawn": {
+        "add": { "component_groups": ["file:despawn"] }
+      }
+    }
+  }
+}

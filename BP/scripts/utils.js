@@ -189,7 +189,22 @@ const Vec3 = (x, y, z) => (typeof x == 'object' && ({ x, y, z } = x), {
     // Debug string
     toString: () => `Vec3(${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)})`,
 
-    toUse: () => `${x} ${y} ${z}`
+    toUse: () => `${x} ${y} ${z}`,
+
+    // Key for Set/Map lookups
+    toKey: () => `${x},${y},${z}`,
+
+    // Block center (add 0.5 to each axis)
+    center: () => Vec3(x + 0.5, y + 0.5, z + 0.5),
+
+    // Floor each component
+    floor: () => Vec3(Math.floor(x), Math.floor(y), Math.floor(z)),
+
+    // Absolute value
+    abs: () => Vec3(Math.abs(x), Math.abs(y), Math.abs(z)),
+
+    // Equality check
+    equals: (v) => x === v.x && y === v.y && z === v.z
 });
 //discarded as Vec3() now supports objects
 Vec3.convert = ({ x, y, z }) => Vec3(x, y, z)
@@ -274,12 +289,6 @@ function formatTime(ms) {
     return `${seconds}s`;
 }
 
-export const EXCLUDED_BLOCKS = new Set([
-    "minecraft:air", "minecraft:bedrock", "minecraft:water", "minecraft:lava",
-    "minecraft:flowing_water", "minecraft:flowing_lava", "minecraft:fire",
-    "minecraft:soul_fire", "minecraft:light_block", "minecraft:structure_void", 
-    "minecraft:barrier"
-]);
 
 /**
  * Runs a job by processing items in chunks to avoid watchdog termination,

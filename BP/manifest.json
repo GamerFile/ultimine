@@ -1,0 +1,70 @@
+{
+	"format_version": 2,
+	"header": {
+		"name": "File's Ultimine",
+		"description": "Ultimine Behavior Pack v1.2.0",
+		"uuid": "104eb090-6a31-4597-9356-ea371765dd31",
+		"version": [
+			1,
+			2,
+			0
+		],
+		"min_engine_version": [
+			1,
+			21,
+			100
+		]
+	},
+	"modules": [
+		{
+			"type": "script",
+			"language": "javascript",
+			"uuid": "477d9448-22b8-453c-a169-ab2ff2b385eb",
+			"entry": "scripts/index.js",
+			"version": [
+				1,
+				2,
+				0
+			]
+		},
+		{
+			"description": "Ultimine BP Data",
+			"type": "data",
+			"uuid": "46c4fb4a-b9ef-42dc-b56d-84b3f3b1726d",
+			"version": [
+				1,
+				0,
+				0
+			]
+		}
+	],
+	"capabilities": [],
+	"dependencies": [
+		{
+			"module_name": "@minecraft/server",
+			"version": "2.6.0"
+		},
+		{
+			"module_name": "@minecraft/common",
+			"version": "1.2.0"
+		},
+		{
+			"module_name": "@minecraft/server-ui",
+			"version": "2.0.0"
+		},
+		{
+			"uuid": "b7e3c8a1-5f2d-4e9a-8c1b-3a7d6e9f0b2c",
+			"version": [
+				1,
+				2,
+				0
+			]
+		}
+	],
+	"metadata": {
+		"authors": [
+			"GamerFile"
+		],
+		"product_type": "addon"
+	}
+}
