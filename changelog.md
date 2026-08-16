@@ -10,4 +10,4 @@ Integrated Bedrock's native loot table manager to simplify drop logic and remove
   - Cleared out custom block-to-drop mapping directories (`oreDropMap` and `SILK_TOUCH_SELF_DROP`) from `config.js`.
   - Drops are generated dynamically using survival rules and teleported directly to the primary mined coordinates block.
 - **XP Gating**:
-  - Maintained `/summon xp_orb` command triggers for ore blocks mined without Silk Touch, as vanilla loot tables do not generate XP.
+  - Maintained `/summon xp_orb` command triggers for ore blocks mined without Silk Touch, as vanilla loot tables do not generate XP. 
