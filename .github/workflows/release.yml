@@ -39,11 +39,10 @@ jobs:
         id: build
         env:
           # Automatically grabs your repository's name
-          REPO_NAME: ${{ github.event.repository.name }}
           VERSION: ${{ steps.get_version.outputs.version }}
         run: |
           # Format: repo-name-1.0.0.mcaddon
-          FILE_NAME="${REPO_NAME}-${VERSION}.mcaddon"
+          FILE_NAME="Ultimine_${VERSION}.mcaddon"
           
           # The zip command can create the .mcaddon extension directly
           zip -r "$FILE_NAME" BP RP
