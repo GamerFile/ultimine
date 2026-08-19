@@ -1,6 +1,6 @@
 // Mining logic — block selection, tool validation, type matching
 import { world } from "@minecraft/server";
-import { Vec3 } from "utils";
+import { Vec3, isVegetation } from "utils";
 import { blockGroups, EXCLUDED_BLOCKS, MAX_BLOCKS } from "./config.js";
 
 export const isOre = (id) => id.includes("ore") || id.includes("ancient_debris");
@@ -41,6 +41,8 @@ export function canMine(block, tool, player) {
 
 export function isSameType(id1, id2) {
     if (id1 === id2) return true;
+
+    if (isVegetation(id1) && isVegetation(id2)) return true;
 
     if (id1.includes("copper") && id2.includes("copper")) {
         const getBase = (id) => id.replace("waxed_", "").replace("oxidized_", "").replace("weathered_", "").replace("exposed_", "");
@@ -89,6 +91,9 @@ export function getBlocksForMode(startBlock, face, viewDir, mode, tool, player) 
 
     if (mode === 0) {
         const targetType = startBlock.typeId;
+        const isVeg = isVegetation(targetType);
+        const reachH = isVeg ? 2 : 1;
+        const reachV = 1;
         const startLoc = Vec3(startBlock);
         const queue = [{ b: startBlock, cost: 0 }];
         blockIds.add(startLoc.toKey());
@@ -97,9 +102,9 @@ export function getBlocksForMode(startBlock, face, viewDir, mode, tool, player) 
             const current = queue.shift().b;
             blocksToMine.push(current);
 
-            for (let dx = -1; dx <= 1; dx++) {
-                for (let dy = -1; dy <= 1; dy++) {
-                    for (let dz = -1; dz <= 1; dz++) {
+            for (let dx = -reachH; dx <= reachH; dx++) {
+                for (let dy = -reachV; dy <= reachV; dy++) {
+                    for (let dz = -reachH; dz <= reachH; dz++) {
                         if (dx === 0 && dy === 0 && dz === 0) continue;
 
                         const nPos = Vec3(current).add(dx, dy, dz);
@@ -116,7 +121,7 @@ export function getBlocksForMode(startBlock, face, viewDir, mode, tool, player) 
                             const costF = locF < 0 ? -locF * 3 : locF;
                             const costU = Math.abs(locU) * 1.5;
                             const costR = Math.abs(locR) * 1.5;
-                            const cost = Math.max(costF, costU, costR);
+                            const cost = isVeg ? (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) : Math.max(costF, costU, costR);
 
                             if (locF >= -64 && locF <= 64 && Math.abs(locU) <= 64 && Math.abs(locR) <= 64) {
                                 try {

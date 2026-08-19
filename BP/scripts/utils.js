@@ -1,28 +1,43 @@
 import { Block, ItemStack, World, system } from "@minecraft/server";
-
+import { CROP_DATA } from "./config.js";
 
 /**
- * 
- * @param {import("@minecraft/server").Vector3} direction 
- * @param {import("@minecraft/server").Vector3} location
- * @param {Number} dist
- * @returns {import("@minecraft/server").Vector3}
+ * Checks if a block is a mature crop that can be harvested.
+ * @param {Block} block 
+ * @returns {{ typeId: string, crop: object, val: number } | null}
  */
-function getPoint(direction, location, dist) {
-    return {
-        x: location.x + direction.x * dist,
-        y: location.y + direction.y * dist,
-        z: location.z + direction.z * dist
-    }
+function getCropInfo(block) {
+    if (!block) return null;
+    const typeId = block.typeId;
+    const crop = CROP_DATA[typeId];
+    if (!crop) return null;
+    try {
+        const val = block.permutation.getState(crop.state);
+        const minReq = crop.minHarvest ?? crop.max;
+        if (typeof val === "number" && val >= minReq) {
+            return { typeId, crop, val };
+        }
+    } catch (e) { }
+    return null;
 }
+
 /**
- * 
- * @param {import("@minecraft/server").Vector3} loc1 
- * @param {import("@minecraft/server").Vector3} loc2 
- * @returns {Number}
+ * Checks if a block ID is vegetation / grass / flower.
+ * @param {string} id 
+ * @returns {boolean}
  */
-function getDist(loc1, loc2) {
-    return Math.hypot(loc1.x - loc2.x, loc1.y - loc2.y, loc1.z - loc2.z);
+function isVegetation(id) {
+    if (!id || typeof id !== "string") return false;
+    if (id.includes("grass_block") || id.includes("grass_path")) return false;
+    return id.includes("short_grass") || id.includes("tall_grass") || id.includes("tallgrass") ||
+        id.includes("seagrass") || id.includes("fern") || id.includes("flower") ||
+        id.includes("tulip") || id.includes("orchid") || id.includes("daisy") ||
+        id.includes("sprouts") || id.includes("roots") || id.includes("dead_bush") ||
+        id.includes("bush") || id.includes("rose") || id.includes("dandelion") ||
+        id.includes("poppy") || id.includes("allium") || id.includes("bluet") ||
+        id.includes("cornflower") || id.includes("peony") || id.includes("lilac") ||
+        id.includes("sunflower") || id.includes("pink_petals") || id.includes("fungus") ||
+        id.includes("mushroom");
 }
 
 
@@ -152,4 +167,4 @@ function runJob(items, processFn, onDone) {
     }, 1); // Every 1 tick for a smooth effect
 }
 
-export { giveItem, Vec3, runJob };
+export { giveItem, Vec3, runJob, getCropInfo, isVegetation };

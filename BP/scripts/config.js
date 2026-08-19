@@ -37,3 +37,16 @@ export const blockGroups = [
     new Set(["minecraft:emerald_ore", "minecraft:deepslate_emerald_ore"]),
     new Set(["minecraft:redstone_ore", "minecraft:deepslate_redstone_ore", "minecraft:lit_redstone_ore", "minecraft:lit_deepslate_redstone_ore"])
 ];
+
+export const CROP_DATA = {
+    "minecraft:wheat": { state: "growth", max: 7, resetState: "growth", resetVal: 0 },
+    "minecraft:carrots": { state: "growth", max: 7, resetState: "growth", resetVal: 0 },
+    "minecraft:potatoes": { state: "growth", max: 7, resetState: "growth", resetVal: 0 },
+    "minecraft:beetroot": { state: "growth", max: 7, resetState: "growth", resetVal: 0 },
+    "minecraft:nether_wart": { state: "age", max: 3, resetState: "age", resetVal: 0 },
+    "minecraft:cocoa": { state: "age", max: 2, resetState: "age", resetVal: 0 },
+    "minecraft:sweet_berry_bush": { state: "growth", max: 3, minHarvest: 2, resetState: "growth", resetVal: 1 },
+    "minecraft:torchflower_crop": { state: "growth", max: 1, resetState: null },
+    "minecraft:pitcher_crop": { state: "growth", max: 4, resetState: null },
+};
+

@@ -2,6 +2,18 @@
 
 All notable changes to **File's Ultimine** will be documented in this file.
 
+## [1.3.4] - 2026-08-19
+
+### 🚀 Files Ultimine v1.3.4 - Crop Harvesting & Grass Handling Update
+
+This update introduces right-click crop harvesting with auto-replanting and special non-adjacent grass clearing.
+
+#### 🌟 What's New & Improved
+*   **🌾 Right-Click Crop Harvesting & Auto-Replant**:
+    *   Right-clicking any mature crop (Wheat, Carrots, Potatoes, Beetroots, Nether Wart, Cocoa, Sweet Berries) with an empty hand, seeds, or a tool will instantly harvest the entire connected crop field and automatically replant the crops back to stage 0!
+*   **🌿 Special Handling for Grass & Wildflowers**:
+    *   Grass-like blocks and flowers across fields and meadows can now bridge 1-to-2 block air gaps, allowing non-adjacent grass and wildflowers to be selected and cleared effortlessly in a single swing.
+
 ## [1.3.3] - 2026-08-15
 
 ### 🚀 Files Ultimine v1.3.3 - Axe Copper Scraping Fix

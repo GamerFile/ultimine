@@ -1,6 +1,6 @@
-// Block interact event handler — hoe/axe/shovel actions
+// Block interact event handler — hoe/axe/shovel/crop actions
 import { system, world, BlockPermutation, ItemStack } from "@minecraft/server";
-import { Vec3, runJob } from "utils";
+import { Vec3, runJob, getCropInfo } from "utils";
 import { getPlayerData, clearHighlights, isHungry } from "../state.js";
 import { getBlocksForMode } from "../mining.js";
 
@@ -13,26 +13,31 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
     if (!data || data.slot === -1 || data.active || data.slot > 5) return;
     if (isHungry(player)) return;
 
-    if (!itemStack) return;
-
-    const isHoe = itemStack.typeId.includes("hoe");
-    const isAxe = itemStack.typeId.includes("axe");
-    const isShovel = itemStack.typeId.includes("shovel");
-
-    if (!isHoe && !isAxe && !isShovel) return;
-
     const bType = block.typeId;
     let action = null;
 
-    if (isHoe && (bType === "minecraft:dirt" || bType === "minecraft:grass_block" || bType === "minecraft:dirt_with_roots" || bType === "minecraft:grass_path" || bType === "minecraft:coarse_dirt")) {
-        action = "till";
-    } else if (isShovel && (bType === "minecraft:grass_block" || bType === "minecraft:podzol" || bType === "minecraft:coarse_dirt" || bType === "minecraft:mycelium" || bType === "minecraft:dirt")) {
-        action = "shove";
-    } else if (isAxe) {
-        const isScrapableCopper = bType.includes("copper") && (bType.includes("waxed_") || bType.includes("oxidized_") || bType.includes("weathered_") || bType.includes("exposed_"));
-        const isStrippableWood = (bType.includes("log") || bType.includes("wood")) && !bType.includes("stripped_");
-        if (isScrapableCopper || isStrippableWood) {
-            action = "scrape";
+    const cropInfo = getCropInfo(block);
+    if (cropInfo) {
+        action = "harvest";
+    } else {
+        if (!itemStack) return;
+
+        const isHoe = itemStack.typeId.includes("hoe");
+        const isAxe = itemStack.typeId.includes("axe");
+        const isShovel = itemStack.typeId.includes("shovel");
+
+        if (!isHoe && !isAxe && !isShovel) return;
+
+        if (isHoe && (bType === "minecraft:dirt" || bType === "minecraft:grass_block" || bType === "minecraft:dirt_with_roots" || bType === "minecraft:grass_path" || bType === "minecraft:coarse_dirt")) {
+            action = "till";
+        } else if (isShovel && (bType === "minecraft:grass_block" || bType === "minecraft:podzol" || bType === "minecraft:coarse_dirt" || bType === "minecraft:mycelium" || bType === "minecraft:dirt")) {
+            action = "shove";
+        } else if (isAxe) {
+            const isScrapableCopper = bType.includes("copper") && (bType.includes("waxed_") || bType.includes("oxidized_") || bType.includes("weathered_") || bType.includes("exposed_"));
+            const isStrippableWood = (bType.includes("log") || bType.includes("wood")) && !bType.includes("stripped_");
+            if (isScrapableCopper || isStrippableWood) {
+                action = "scrape";
+            }
         }
     }
 
@@ -52,19 +57,78 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
     } catch (e) { }
 
     let unbreaking = 0;
-    const enchantComp = itemStack.getComponent("minecraft:enchantable");
-    if (enchantComp) {
-        unbreaking = enchantComp.getEnchantment("unbreaking")?.level || enchantComp.getEnchantment("minecraft:unbreaking")?.level || 0;
+    if (itemStack) {
+        const enchantComp = itemStack.getComponent("minecraft:enchantable");
+        if (enchantComp) {
+            unbreaking = enchantComp.getEnchantment("unbreaking")?.level || enchantComp.getEnchantment("minecraft:unbreaking")?.level || 0;
+        }
     }
 
     clearHighlights(player);
     data.lastTarget = null;
     let inventory = player.getComponent("inventory").container;
+    const dropTarget = Vec3(block).add(0.5, 0, 0.5);
+    const ltm = world.getLootTableManager();
+
+    if (action === "harvest") {
+        try {
+            player.playSound("block.sweet_berry_bush.pick");
+        } catch (e) { }
+    }
 
     system.run(() => {
         runJob(blocksToMine, (b) => {
             const bPos = Vec3(b);
             const targetType = b.typeId;
+
+            if (action === "harvest") {
+                const info = getCropInfo(b);
+                if (info) {
+                    try {
+                        const loot = ltm.generateLootFromBlock(b, itemStack);
+                        loot?.forEach(item => {
+                            b.dimension.spawnItem(item, dropTarget);
+                        });
+
+                        if (info.crop.resetState) {
+                            b.setPermutation(b.permutation.withState(info.crop.resetState, info.crop.resetVal));
+                        } else {
+                            b.setType("minecraft:air");
+                        }
+                    } catch (e) { }
+
+                    if (!isCreative) {
+                        try {
+                            const exhaustComp = player.getComponent("minecraft:player.exhaustion");
+                            if (exhaustComp) exhaustComp.setCurrentValue(exhaustComp.currentValue + 0.02);
+                        } catch (e) { }
+
+                        if (itemStack && itemStack.typeId.includes("hoe")) {
+                            const tool = inventory.getItem(player.selectedSlotIndex);
+                            if (tool) {
+                                const dur = tool.getComponent("durability");
+                                if (dur) {
+                                    let shouldDamage = true;
+                                    if (unbreaking > 0) {
+                                        shouldDamage = Math.random() < (1 / (unbreaking + 1));
+                                    }
+                                    if (shouldDamage) {
+                                        dur.damage += 1;
+                                        if (dur.damage >= dur.maxDurability) {
+                                            inventory.setItem(player.selectedSlotIndex, undefined);
+                                            player.playSound("random.break");
+                                        } else {
+                                            inventory.setItem(player.selectedSlotIndex, tool);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+
             let targetBlockId = null;
 
             if (action === "till") {
@@ -153,3 +217,4 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
         });
     });
 });
+
